@@ -1,6 +1,3 @@
-# PortfolioProjects
-A selection of projects for my SQL Portfolio. 
-
 
 CRYPTO SQL PROJECT STEPS
 

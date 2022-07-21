@@ -1,0 +1,151 @@
+--Altering the Datatype of the 'Date' Column to Date from NVARCHAR(255)
+
+alter table crypto_project..Cardano
+alter column date date;
+
+select *
+from crypto_project..Bitcoin_Cash
+order by date asc
+
+
+Select crypto_project..Bitcoin_Cash.date, crypto_project..Bitcoin.Price,crypto_project..Bitcoin_cash.date
+from crypto_project..Bitcoin_Cash
+INNER JOIN crypto_project..Bitcoin On crypto_project..Bitcoin_Cash.date=crypto_project..Bitcoin.date
+
+-- Used JOIN to pull price on all dates in date-range for each coin.
+
+Select crypto_project..Bitcoin_Cash.Date, crypto_project..Bitcoin.Price as 'Bitcoin Price', crypto_project..Bitcoin_cash.Price as 'Bitcoin Cash Price', crypto_project..Bitcoin_Gold.Price as 'Bitcoin Gold Price', crypto_project..Cardano.Price as 'Cardano Price',
+	crypto_project..Dash.Price as 'Dash Price', crypto_project..EOS.Price as 'EOS Price', crypto_project..Ethereum_Classic.Price as'Ethereum Classic Price', crypto_project..Ethereum.Price as 'Ethereum Price', crypto_project..Nem.price as 'Nem Price',
+	crypto_project..IOTA.price as 'IOTA Price', crypto_project..litecoin.price as 'Litecoin Price', crypto_project..Monero.price as 'Monero Price', crypto_project..Neo.price as 'Neo Price',
+	crypto_project..Stellar.price as 'Stellar Price', crypto_project..XRP.price as 'XRP Price'
+from crypto_project..Bitcoin_Cash
+INNER JOIN crypto_project..Bitcoin On crypto_project..Bitcoin_Cash.date=crypto_project..Bitcoin.date
+INNER JOIN crypto_project..Bitcoin_gold On crypto_project..Bitcoin.date=crypto_project..Bitcoin_Gold.date
+INNER JOIN crypto_project..Cardano On crypto_project..Bitcoin_Gold.date=crypto_project..Cardano.date
+INNER JOIN crypto_project..Dash On crypto_project..Cardano.date=crypto_project..Dash.date
+INNER JOIN crypto_project..EOS On crypto_project..Dash.date=crypto_project..EOS.date
+INNER JOIN crypto_project..Ethereum_Classic On crypto_project..EOS.date=crypto_project..Ethereum_classic.date
+INNER JOIN crypto_project..Ethereum On crypto_project..Ethereum_classic.date=crypto_project..Ethereum.date
+INNER JOIN crypto_project..Iota On crypto_project..Ethereum.date=crypto_project..IOTA.date
+INNER JOIN crypto_project..Litecoin On crypto_project..IOTA.date=crypto_project..litecoin.date
+INNER JOIN crypto_project..Monero On crypto_project..litecoin.date=crypto_project..Monero.date
+INNER JOIN crypto_project..Neo On crypto_project..monero.date=crypto_project..Neo.date
+INNER JOIN crypto_project..Stellar On crypto_project..Neo.date=crypto_project..Stellar.date
+INNER JOIN crypto_project..XRP On crypto_project..Stellar.date=crypto_project..XRP.date
+INNER JOIN crypto_project..Nem On crypto_project..xrp.date=crypto_project..nem.date
+order by date asc
+
+
+--combined price and date data for all coins into new table. 
+
+with coin_summary (date, bitcoin_price, bitcoin_cash_price, bitcoin_gold_price, cardano_price, dash_price, EOS_price, ethereum_classic_price, ethereum_price, IOTA_price, Litecoin_price, monero_price, neo_price,nem_price, stellar_price, xrp_price)
+as 
+(Select crypto_project..Bitcoin_Cash.Date, crypto_project..Bitcoin.Price as 'Bitcoin Price', crypto_project..Bitcoin_cash.Price as 'Bitcoin Cash Price', crypto_project..Bitcoin_Gold.Price as 'Bitcoin Gold Price', crypto_project..Cardano.Price as 'Cardano Price',
+	crypto_project..Dash.Price as 'Dash Price', crypto_project..EOS.Price as 'EOS Price', crypto_project..Ethereum_Classic.Price as'Ethereum Classic Price', crypto_project..Ethereum.Price as 'Ethereum Price',
+	crypto_project..IOTA.price as 'IOTA Price', crypto_project..litecoin.price as 'Litecoin Price', crypto_project..Monero.price as 'Monero Price', crypto_project..Neo.price as 'Neo Price', crypto_project..Nem.price as 'Nem Price',
+	crypto_project..Stellar.price as 'Stellar Price', crypto_project..XRP.price as 'XRP Price'
+from crypto_project..Bitcoin_Cash
+INNER JOIN crypto_project..Bitcoin On crypto_project..Bitcoin_Cash.date=crypto_project..Bitcoin.date
+INNER JOIN crypto_project..Bitcoin_gold On crypto_project..Bitcoin.date=crypto_project..Bitcoin_Gold.date
+INNER JOIN crypto_project..Cardano On crypto_project..Bitcoin_Gold.date=crypto_project..Cardano.date
+INNER JOIN crypto_project..Dash On crypto_project..Cardano.date=crypto_project..Dash.date
+INNER JOIN crypto_project..EOS On crypto_project..Dash.date=crypto_project..EOS.date
+INNER JOIN crypto_project..Ethereum_Classic On crypto_project..EOS.date=crypto_project..Ethereum_classic.date
+INNER JOIN crypto_project..Ethereum On crypto_project..Ethereum_classic.date=crypto_project..Ethereum.date
+INNER JOIN crypto_project..Iota On crypto_project..Ethereum.date=crypto_project..IOTA.date
+INNER JOIN crypto_project..Litecoin On crypto_project..IOTA.date=crypto_project..litecoin.date
+INNER JOIN crypto_project..Monero On crypto_project..litecoin.date=crypto_project..Monero.date
+INNER JOIN crypto_project..Neo On crypto_project..monero.date=crypto_project..Neo.date
+INNER JOIN crypto_project..Stellar On crypto_project..Neo.date=crypto_project..Stellar.date
+INNER JOIN crypto_project..XRP On crypto_project..Stellar.date=crypto_project..XRP.date
+INNER JOIN crypto_project..Nem On crypto_project..xrp.date=crypto_project..nem.date)
+select *
+INTO combined_coin_daily_prices
+from coin_summary
+
+--max prices of coins through entire date range
+
+select max(bitcoin_price) as btc_price, max(bitcoin_cash_price) as bitcoin_cash_price, max(bitcoin_gold_price), max(cardano_price), max(dash_price), max(EOS_price), max(ethereum_classic_price), max(ethereum_price), max(IOTA_price),
+max(Litecoin_price), max(monero_price), max(neo_price), max(nem_price), max(stellar_price), max(xrp_price)
+from crypto_project..combined_coin_daily_prices
+
+--max prices before 01/01/2019
+
+select max(bitcoin_price), max(bitcoin_cash_price), max(bitcoin_gold_price), max(cardano_price), max(dash_price), max(EOS_price), max(ethereum_classic_price), max(ethereum_price), max(IOTA_price),
+max(Litecoin_price), max(monero_price), max(neo_price), max(stellar_price), max(xrp_price)
+from crypto_project..combined_coin_daily_prices
+where date < '01/01/2019'
+
+--date of BTC high pre 2020-2021 bullrun
+
+select max(bitcoin_price), date
+from crypto_project..combined_coin_daily_prices
+where date < '01/07/2020'
+group by date
+order by max(bitcoin_price) desc
+
+select *
+from crypto_project..combined_coin_daily_prices
+where date = '2017-12-16'
+
+-- finding the date of the highest bitcoin price
+select max(bitcoin_price), date
+from crypto_project..combined_coin_daily_prices
+where date >'2020-07-01'
+group by date
+order by max(bitcoin_price) desc
+
+
+--if you bought 1000 worth of each top 15 coin, on the day bitcoin peaked in 2017, how much would your investment be worth today? from 2017-12-16 to 2021-11-08
+
+-- finding out how many of each coin you purchased.
+
+select date, 1000/bitcoin_price as bitcoin, 1000/bitcoin_cash_price as bitcoin_cash, 1000/bitcoin_gold_price as bitcoin_gold, 1000/cardano_price as cardano, 1000/dash_price as dash, 1000/EOS_price as EOS,
+1000/ethereum_classic_price as eth_classic, 1000/ethereum_price as ethereum, 1000/IOTA_price as IOTA, 1000/Litecoin_price as litecoin, 1000/monero_price as monero, 1000/neo_price as neo, 1000/nem_price as nem,
+1000/stellar_price as stellar, 1000/xrp_price as XRP
+from crypto_project..combined_coin_daily_prices
+where date = '2017-12-16'
+
+select *
+from crypto_project..combined_coin_daily_prices
+where date = '2021-11-08'
+
+--price at the time of BTC's  all time high 
+
+select date, 1000/bitcoin_price*67527.9 as bitcoin, 1000/bitcoin_cash_price*638.5 as bitcoin_cash, 1000/bitcoin_gold_price*69.22 as bitcoin_gold, 1000/cardano_price*2.124 as cardano, 1000/dash_price*211.81 as dash, 1000/EOS_price*4.86 as EOS,
+1000/ethereum_classic_price*56.59 as eth_classic, 1000/ethereum_price*4808.38 as ethereum, 1000/IOTA_price*1.3763 as IOTA, 1000/Litecoin_price*228.9 as litecoin, 1000/monero_price*274.799 as monero, 1000/neo_price*50.5519 as neo, 1000/nem_price*0.20416 as nem,
+1000/stellar_price*0.37793 as stellar, 1000/xrp_price*1.28185 as XRP
+from crypto_project..combined_coin_daily_prices
+where date = '2017-12-16'
+
+select *
+from crypto_project..combined_coin_daily_prices
+where date ='2022-07-13'
+
+--price at july 13 2022. 
+
+select date, 1000/bitcoin_price*19471.6 as bitcoin, 1000/bitcoin_cash_price*99.3 as bitcoin_cash, 1000/bitcoin_gold_price*15.2 as bitcoin_gold, 1000/cardano_price*0.421 as cardano, 1000/dash_price*41.4 as dash, 1000/EOS_price*0.9418 as EOS,
+1000/ethereum_classic_price*14.1994 as eth_classic, 1000/ethereum_price*1060.37 as ethereum, 1000/IOTA_price*0.26351 as IOTA, 1000/Litecoin_price*49.05 as litecoin, 1000/monero_price*125.276 as monero, 1000/neo_price*8.3134 as neo, 1000/nem_price*0.03848,
+1000/stellar_price*0.10361 as stellar, 1000/xrp_price*0.31859 as XRP
+from crypto_project..combined_coin_daily_prices
+where date = '2017-12-16'
+
+-- if you bought 5000 each of BTC, ETH and ADA instead
+
+-- amount of coins purchased
+
+select date, 5000/bitcoin_price as bitcoin, 5000/ethereum_price as ethereum, 5000/cardano_price as cardano
+from crypto_project..combined_coin_daily_prices
+where date = '2017-12-16'
+
+--price at 08/11/2021
+
+select date, 0.258458039337314*bitcoin_price as bitcoin, 7.31796560556165*ethereum_price as ethereum, 12382.3675086677*cardano_price as cardano
+from crypto_project..combined_coin_daily_prices
+where date ='2021-11-08'
+
+--price at 13/07/2022
+
+select date, 0.258458039337314*bitcoin_price as bitcoin, 7.31796560556165*ethereum_price as ethereum, 12382.3675086677*cardano_price as cardano
+from crypto_project..combined_coin_daily_prices
+where date ='2022-07-13'

@@ -1,11 +1,10 @@
 
 CRYPTO SQL PROJECT STEPS
 
-1. extract data from just before last bull top to current day, data extracted to 1 csv for each coin. 15 top coins at the time
-2. convert csv to xls and import into MS server SQL
-3. use JOINS to pull date and price for each coin into output.
-4. use INTO to pull output into new table.
-5. performance analysis with sql on new table - max price, min, price, max before certain date, min before certain date.
-6. analyse if u bought 1000 of each coin at various prices, how wouold u go today. 
+1. Extract data from just before 2017 bitcoin all time high to current day. Data extracted to 15 csvs, one for each of the top 15 coins by market cap at the 2017 date.
+2. Convert csv to xls and import into MS server SQL
+3. Write JOIN function to pull date and price for each coin into an output.
+4. Use INTO to pull output into new table.
+5. Performance analysis with SQL, determine how your portfolio would go if you invested $1000 into the top 15 coins at the time. 
 
-answer question - based on historical data is crypto a good investment? 
+Answer question - based on historical data is crypto a good investment? 
